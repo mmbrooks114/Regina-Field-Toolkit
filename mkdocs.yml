@@ -1,0 +1,31 @@
+site_name: Regina Field Toolkit
+site_url: https://<your-username>.github.io/ReginaFieldToolkit
+repo_url: https://github.com/<your-username>/ReginaFieldToolkit
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.instant
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quickstart: quickstart.md
+  - API Reference:
+      - Datasets: api/datasets.md
+      - Features: api/features.md
+      - Zones: api/zones.md
+      - Royal: api/royal.md
+      - Geometry: api/geometry.md
+      - Hilbert: api/hilbert.md
+      - Scoring: api/scoring.md
+      - Visualization: api/visualize.md
+      - RH Bridge: api/rh_bridge.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - footnotes
+  - toc:
+      permalink: true

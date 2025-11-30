@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+import argparse
+import pandas as pd
+
+from reginafield import (
+    datasets,
+    visualize,
+    zones,
+    royal,
+    features,
+    geometry,
+    hilbert,
+    scoring,
+)
+
+
+def cmd_summary(args):
+    df = datasets.load_enriched_master(args.master)
+    print(df.describe(include="all"))
+
+
+def cmd_plot_pca(args):
+    df = datasets.load_enriched_master(args.master)
+    visualize.plot_pca_field(df, color_by=args.color)
+
+
+def cmd_plot_royal(args):
+    df = datasets.load_enriched_master(args.master)
+    royal_df = datasets.load_royal_primes(args.royal)
+    df = royal.attach_royal_status(df, royal_df)
+    visualize.plot_royal_vs_field(df)
+
+
+def cmd_zones(args):
+    df = datasets.load_enriched_master(args.master)
+    df = zones.classify_attractor_zones(df)
+    df.to_csv(args.output, index=False)
+    print(f"Zones saved to {args.output}")
+
+
+def cmd_plot_zones(args):
+    df = datasets.load_enriched_master(args.master)
+    df = zones.classify_attractor_zones(df)
+    visualize.plot_pca_field(df, color_by="Zone")
+
+
+def cmd_entropy_curv_plot(args):
+    df = datasets.load_enriched_master(args.master)
+    visualize.plot_entropy_vs_curvature(df, color_by=args.color)
+
+
+def cmd_score(args):
+    df = datasets.load_enriched_master(args.master)
+    df = scoring.composite_structural_score(df)
+    df = scoring.rank_by_structural_score(df)
+    df.to_csv(args.output, index=False)
+    print(f"Scores saved to {args.output}")
+
+
+def cmd_shells(args):
+    df = datasets.load_enriched_master(args.master)
+    df = geometry.add_shell_index(df)
+    df.to_csv(args.output, index=False)
+    print(f"Shell indices saved to {args.output}")
+
+
+def cmd_tiers(args):
+    df = datasets.load_enriched_master(args.master)
+    df = features.add_entropy_tiers(df)
+    df = features.add_curvature_tiers(df)
+    df.to_csv(args.output, index=False)
+    print(f"Tiers saved to {args.output}")
+
+
+def cmd_ray_project(args):
+    df = datasets.load_enriched_master(args.master)
+    royal_df = datasets.load_royal_primes(args.royal)
+    df = royal.attach_royal_status(df, royal_df)
+    direction = royal.estimate_extremal_ray_direction(df)
+    df = royal.project_onto_extremal_ray(df, direction)
+    df.to_csv(args.output, index=False)
+    print(f"Ray projections saved to {args.output}")
+
+
+def cmd_extract_royal(args):
+    df = datasets.load_enriched_master(args.master)
+    royal_df = datasets.load_royal_primes(args.royal)
+    df = royal.attach_royal_status(df, royal_df)
+    df_royal = royal.filter_royal(df)
+    df_royal.to_csv(args.output, index=False)
+    print(f"Royal subset saved to {args.output}")
+
+
+def cmd_hilbert(args):
+    df = datasets.load_enriched_master(args.master)
+    mag = hilbert.hilbert_envelope(df["Curvature"].to_numpy())
+    peaks = hilbert.detect_local_peaks(mag)
+    df["HilbertMag"] = mag
+    df["IsPeak"] = peaks
+    df.to_csv(args.output, index=False)
+    print(f"Hilbert envelope + peaks saved to {args.output}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Regina Field CLI Toolkit")
+    sub = parser.add_subparsers(dest="command")
+
+    # summary
+    p1 = sub.add_parser("summary")
+    p1.add_argument("master")
+    p1.set_defaults(func=cmd_summary)
+
+    # PCA
+    p2 = sub.add_parser("plot-pca")
+    p2.add_argument("master")
+    p2.add_argument("--color", default=None)
+    p2.set_defaults(func=cmd_plot_pca)
+
+    # Royal plot
+    p3 = sub.add_parser("plot-royal")
+    p3.add_argument("master")
+    p3.add_argument("royal")
+    p3.set_defaults(func=cmd_plot_royal)
+
+    # Zones export
+    p4 = sub.add_parser("compute-zones")
+    p4.add_argument("master")
+    p4.add_argument("output")
+    p4.set_defaults(func=cmd_zones)
+
+    # Zones visualization
+    p5 = sub.add_parser("plot-zones")
+    p5.add_argument("master")
+    p5.set_defaults(func=cmd_plot_zones)
+
+    # Entropy–Curvature scatter
+    p6 = sub.add_parser("plot-entropy-curvature")
+    p6.add_argument("master")
+    p6.add_argument("--color", default=None)
+    p6.set_defaults(func=cmd_entropy_curv_plot)
+
+    # Scoring
+    p7 = sub.add_parser("score")
+    p7.add_argument("master")
+    p7.add_argument("output")
+    p7.set_defaults(func=cmd_score)
+
+    # Shell indices
+    p8 = sub.add_parser("shells")
+    p8.add_argument("master")
+    p8.add_argument("output")
+    p8.set_defaults(func=cmd_shells)
+
+    # Tiers
+    p9 = sub.add_parser("tiers")
+    p9.add_argument("master")
+    p9.add_argument("output")
+    p9.set_defaults(func=cmd_tiers)
+
+    # Extremal ray projection
+    p10 = sub.add_parser("ray-project")
+    p10.add_argument("master")
+    p10.add_argument("royal")
+    p10.add_argument("output")
+    p10.set_defaults(func=cmd_ray_project)
+
+    # Extract Royal subset
+    p11 = sub.add_parser("extract-royal")
+    p11.add_argument("master")
+    p11.add_argument("royal")
+    p11.add_argument("output")
+    p11.set_defaults(func=cmd_extract_royal)
+
+    # Hilbert envelope & peaks
+    p12 = sub.add_parser("hilbert")
+    p12.add_argument("master")
+    p12.add_argument("output")
+    p12.set_defaults(func=cmd_hilbert)
+
+    args = parser.parse_args()
+    if hasattr(args, "func"):
+        args.func(args)
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    main()
