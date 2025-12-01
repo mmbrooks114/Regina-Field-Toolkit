@@ -21,9 +21,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://osf.io/<your-url>"
-Repository = "https://github.com/<your-repo>"
-Documentation = "https://<future-docsite-url>"
+Homepage = "https://osf.io/8hq9b"
+Repository = "https://github.com/mmbrooks114/Regina-Field-Toolkit"
+Documentation = "https://mmbrooks114.github.io/Regina-Field-Toolkit"
 
 [project.scripts]
 reginafield-cli = "reginafield.cli:main"   # This wires CLI into `pip install`
