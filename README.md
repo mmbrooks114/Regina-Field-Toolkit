@@ -2,6 +2,9 @@
 
 A modular, lightweight Python library for analyzing, scoring, and visualizing the structured geometry of prime numbers discovered in the **Regina Field** — a multi-layered system derived from motif decomposition, entropy, curvature, Royal primes, geometric embeddings, Hilbert envelopes, and attractor zone dynamics.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)  
+[![OSF Registration](https://img.shields.io/badge/OSF-8HQ9B-blue)](https://osf.io/8hq9b/overview?view_only=8b619f64c42b4194b44bea927013dbcc)
+
 This toolkit supports:
 
 - loading the official Regina Field datasets  
