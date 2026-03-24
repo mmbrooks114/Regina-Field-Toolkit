@@ -5,7 +5,7 @@ the Regina Field datasets (motifs, entropy, curvature, geometry,
 Royal primes, attractor zones, anomalies, and Hilbert structure).
 """
 
-from . import datasets, features, zones, royal, geometry, hilbert, scoring, visualize, rh_bridge
+from . import datasets, features, zones, royal, geometry, hilbert, scoring, visualize, rh_bridge, extract_sequence_features
 
 __all__ = [
     "datasets",
@@ -17,4 +17,5 @@ __all__ = [
     "scoring",
     "visualize",
     "rh_bridge",
+    "extract_sequence_features"
 ]
